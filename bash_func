@@ -1,0 +1,18 @@
+export EC2SSH_ROOT=~/ec2-ssh
+export EC2SSH_KEY=~/.ssh/aws.pem
+export EC2SSH_USER=ec2-user
+
+__show_instance() {
+  ${EC2SSH_ROOT}/get_instance.sh -v $1 | percol
+}
+ec2-ssh() {
+  if [ "$#" -ne 1 ]; then
+    echo "Usage: ec2-ssh [vpc id]" >&2
+  else
+    local i=$(__show_instance $1)
+    if [[ -n $i ]];then
+      local ip=`echo ${i} | cut -d " " -f 1`
+      ssh -i ${EC2SSH_KEY} ${EC2SSH_USER}@${ip}
+    fi
+  fi
+}
